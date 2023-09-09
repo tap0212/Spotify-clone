@@ -7,11 +7,12 @@ import { useEffect, useState } from 'react'
 import SpotifyWebApi from "spotify-web-api-node"
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 import {msToMinSec} from '../utils'
+import Player from '@/components/Player'
 const inter = Inter({ subsets: ['latin'] })
 const spotifyApi = new SpotifyWebApi({
   clientId: process.env.NEXT_PUBLIC_SPOTIFY_CLIENT_ID,
 })
-interface SearchResults {
+interface SearchResult {
   artist: string;
   title: string;
   uri: string;
@@ -26,12 +27,12 @@ interface SearchResults {
 export default function Home() {
   const [spotifyWindowParamCode, setSpotifyWindowParamCode] = useState<string>('')
   const [searchKey, setSearchKey] = useState<string>('mc')
-  const [searchResults, setSearchResults] = useState<SearchResults[] | undefined>([])
+  const [searchResults, setSearchResults] = useState<SearchResult[] | undefined>([])
   const [refreshToken] = useAuth(spotifyWindowParamCode)
   const [isSearchActive, setIsSearchActive] = useState<boolean>(false)
   const accessToken = useIsLoggedIn()
   const [hoveredIndex, setHoveredIndex] = useState(-1);
-
+  const [playingTrack, setPlayingTrack] = useState<SearchResult | null>(null)
   useEffect(() => {
     if (!accessToken) return    
     spotifyApi.setAccessToken(accessToken)
@@ -72,6 +73,9 @@ export default function Home() {
   const handleMouseLeave = () => {
     setHoveredIndex(-1);
   };
+  const chooseTrack = (track: SearchResult) => {
+    setPlayingTrack(track)
+  }
   return (
     <main
       className={`flex min-h-screen justify-between ${inter.className}`}
@@ -80,12 +84,12 @@ export default function Home() {
         <SideBar toggleSearch={toggleSearch} isSearchActive={isSearchActive} />
       </div>
       <div className='flex flex-col flex-1'>
-      {/* Your other components */}
+        <NavBar searchKey={searchKey} setSearchKey={setSearchKey} isSearchActive={isSearchActive} />
       <div className='p-4'>
-        {searchResults?.length && (
+        {Boolean(searchResults?.length) && (
           <>
             <h1 className='text-xl font-semibold my-4'>Songs</h1>
-            <div className='flex flex-wrap gap-8'>
+            <div className='flex flex-wrap gap-8 relative'>
               {searchResults?.map((track, index) => (
                 <div
                   key={track.id}
@@ -102,6 +106,9 @@ export default function Home() {
                     </p>
                   </div>
                   <div
+                    onClick={() => {
+                      chooseTrack(track)
+                    }}
                     className={`absolute right-8 bottom-20 h-12 w-12 bg-primary flex items-center justify-center rounded-full ${
                       hoveredIndex === index ? 'visible' : 'hidden'
                     }`}
@@ -113,6 +120,9 @@ export default function Home() {
             </div>
           </>
         )}
+        <div className='sticky bottom-0 left-0 right-0'>
+          <Player accessToken={accessToken} trackUri={playingTrack?.uri as string} />
+        </div>
       </div>
     </div>
     </main>
