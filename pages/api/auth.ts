@@ -13,9 +13,9 @@ export default async function handler(
 ) {
   try {
     const spotifyApi = new SpotifyWebApi({
-      clientId: process.env.SPOTIFY_CLIENT_ID,
-      clientSecret: process.env.SPOTIFY_CLIENT_SECRET,
-      redirectUri: process.env.REDIRECT_URI,
+      clientId: process.env.NEXT_PUBLIC_SPOTIFY_CLIENT_ID,
+      clientSecret: process.env.NEXT_PUBLIC_SPOTIFY_CLIENT_SECRET,
+      redirectUri: process.env.NEXT_PUBLIC_REDIRECT_URI,
     });
 
     const data = await spotifyApi.authorizationCodeGrant(req.body.code);

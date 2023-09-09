@@ -5,5 +5,5 @@ export const useIsLoggedIn = () => {
     useEffect(() => {
         setAccessToken(window.localStorage.getItem('accessToken') ?? '')
     }, [])
-    return accessToken
+    return accessToken ? JSON.parse(accessToken) : ''
 }
