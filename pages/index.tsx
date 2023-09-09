@@ -1,3 +1,4 @@
+import NavBar from '@/components/NavBar'
 import SideBar from '@/components/SideBar'
 import { Inter } from 'next/font/google'
 
@@ -10,6 +11,9 @@ export default function Home() {
     >
       <div className='w-1/3'>
         <SideBar />
+      </div>
+      <div className='flex flex-1'> 
+        <NavBar />
       </div>
     </main>
   )
